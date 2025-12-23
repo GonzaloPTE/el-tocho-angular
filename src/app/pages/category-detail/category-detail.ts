@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SongService } from '../../core/services/song.service';
@@ -15,6 +16,8 @@ import { Breadcrumb, BreadcrumbItem } from '../../components/breadcrumb/breadcru
 export class CategoryDetailComponent {
   private route = inject(ActivatedRoute);
   private songService = inject(SongService);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   category = signal<any>(null);
   searchTerm = signal('');
@@ -49,10 +52,27 @@ export class CategoryDetailComponent {
       const slug = params['categorySlug'];
       const cat = this.songService.getCategoryBySlug(slug);
       this.category.set(cat);
+
+      if (cat) {
+        this.updateMetadata(cat);
+      }
     });
 
     this.route.queryParams.subscribe(params => {
       this.searchTerm.set(params['search'] || '');
     });
+  }
+
+  private updateMetadata(category: any) {
+    const title = `Canciones de ${category.description} - Acordes y Letras | El Tocho`;
+    const description = `Descubre letras y acordes de canciones de ${category.description}. Encuentra música para cada momento de la celebración en el cantoral El Tocho.`;
+
+    this.titleService.setTitle(title);
+    this.metaService.updateTag({ name: 'description', content: description });
+
+    // Open Graph
+    this.metaService.updateTag({ property: 'og:title', content: title });
+    this.metaService.updateTag({ property: 'og:description', content: description });
+    this.metaService.updateTag({ property: 'og:image', content: 'https://www.cantoraleltocho.com/images/logo-1x1-1k.png' });
   }
 }

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -23,10 +24,26 @@ interface DownloadItem {
   styleUrl: './downloads.scss',
 })
 export class DownloadsComponent {
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Inicio', href: '/' },
     { label: 'Descargas' },
   ];
+
+  constructor() {
+    const title = 'Descargar El Tocho en PDF - Versiones Imprimibles del Cantoral';
+    const description = 'Accede a las versiones PDF imprimibles de El Tocho. Descarga las diferentes ediciones de nuestro cantoral cristiano para tu comunidad o uso personal.';
+
+    this.titleService.setTitle(title);
+    this.metaService.updateTag({ name: 'description', content: description });
+
+    // Open Graph
+    this.metaService.updateTag({ property: 'og:title', content: title });
+    this.metaService.updateTag({ property: 'og:description', content: description });
+    this.metaService.updateTag({ property: 'og:image', content: 'https://www.cantoraleltocho.com/images/logo-1x1-1k.png' });
+  }
 
   downloadItems: DownloadItem[] = [
     {
