@@ -1,0 +1,12 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "el-tocho-angular",
+    "pages_build_output_dir": "dist/el-tocho-angular/browser",
+    "compatibility_date": "2025-03-25",
+    "compatibility_flags": [
+        "nodejs_compat"
+    ],
+    "vars": {
+        "BASE_URL": "https://www.cantoraleltocho.com"
+    }
+}

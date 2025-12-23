@@ -1,4 +1,5 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
     providedIn: 'root'
@@ -6,16 +7,25 @@ import { Injectable, signal, effect } from '@angular/core';
 export class FavoritesService {
     private readonly FAVORITES_STORAGE_KEY = 'favoriteSongIds';
     favoriteIds = signal<string[]>([]);
+    private platformId = inject(PLATFORM_ID);
 
     constructor() {
-        const storedFavorites = localStorage.getItem(this.FAVORITES_STORAGE_KEY);
-        if (storedFavorites) {
-            this.favoriteIds.set(JSON.parse(storedFavorites));
+        if (isPlatformBrowser(this.platformId)) {
+            const storedFavorites = localStorage.getItem(this.FAVORITES_STORAGE_KEY);
+            if (storedFavorites) {
+                try {
+                    this.favoriteIds.set(JSON.parse(storedFavorites));
+                } catch (e) {
+                    console.error('Error parsing favorites', e);
+                }
+            }
         }
 
         effect(() => {
-            localStorage.setItem(this.FAVORITES_STORAGE_KEY, JSON.stringify(this.favoriteIds()));
-            window.dispatchEvent(new Event('favoritesChanged'));
+            if (isPlatformBrowser(this.platformId)) {
+                localStorage.setItem(this.FAVORITES_STORAGE_KEY, JSON.stringify(this.favoriteIds()));
+                window.dispatchEvent(new Event('favoritesChanged'));
+            }
         });
     }
 
